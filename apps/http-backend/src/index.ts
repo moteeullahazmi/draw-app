@@ -90,7 +90,8 @@ app.post("/room", middleware, async(req, res) => {
   // @ts-ignore
     const userId = req.userId;
 
-    await prismaClient.room.create(
+  try {
+    const room =  await prismaClient.room.create(
         {
             data: {
                 slug: parsedData.data.name,
@@ -100,8 +101,13 @@ app.post("/room", middleware, async(req, res) => {
         
     )
     res.json({
-        roomId: 123,
+        roomId: room.id,
     });
+  } catch (e) {
+    res.status(411).json({
+        message: "Room already axists with this name"
+    })
+  }
 });
 
 app.listen(3001);
